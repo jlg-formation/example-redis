@@ -10,8 +10,9 @@
     </label>
     <label>
       <div>Password</div>
-      <input type="password" formControlName="password" />
+      <app-password formControlName="password"></app-password>
     </label>
     <button class="primary">Login</button>
   </form>
+  {{ f.value | json }}
 </main>

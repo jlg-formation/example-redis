@@ -6,9 +6,15 @@ import { UserComponent } from './user.component';
 import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NewAccountComponent } from './new-account/new-account.component';
+import { WidgetsModule } from '../widgets/widgets.module';
 
 @NgModule({
   declarations: [UserComponent, LoginComponent, NewAccountComponent],
-  imports: [CommonModule, UserRoutingModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    UserRoutingModule,
+    ReactiveFormsModule,
+    WidgetsModule,
+  ],
 })
 export class UserModule {}
