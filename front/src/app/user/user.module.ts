@@ -7,9 +7,10 @@ import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NewAccountComponent } from './new-account/new-account.component';
 import { WidgetsModule } from '../widgets/widgets.module';
+import { AccountCreatedComponent } from './account-created/account-created.component';
 
 @NgModule({
-  declarations: [UserComponent, LoginComponent, NewAccountComponent],
+  declarations: [UserComponent, LoginComponent, NewAccountComponent, AccountCreatedComponent],
   imports: [
     CommonModule,
     UserRoutingModule,

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-account',
@@ -16,9 +17,14 @@ export class NewAccountComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
-  constructor() {}
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {}
 
-  submit() {}
+  async submit() {
+    console.log('submit');
+    await this.router.navigate(['../account-created'], {
+      relativeTo: this.route,
+    });
+  }
 }
