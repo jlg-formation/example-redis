@@ -11,7 +11,7 @@ const cleanAccount = (a: Account): Account => {
   return result;
 };
 
-export class AccountService {
+export class AccountController {
   async create(accountForm: AccountForm) {
     const account = accounts.find((a) => a.email === accountForm.email);
     if (account) {

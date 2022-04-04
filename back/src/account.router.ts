@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { assert, StructError } from "superstruct";
-import { AccountService } from "./AccountService";
+import { AccountController } from "./AccountController";
 import { AuthenticationError } from "./AuthenticationError";
 import { AccountFormModel } from "./validation/AccountFormModel";
 import { CredentialsModel } from "./validation/Credentials";
@@ -15,12 +15,12 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 
 const app = Router();
 
-const accountService = new AccountService();
+const accountController = new AccountController();
 
 app.get("/", auth, (req, res) => {
   (async () => {
     try {
-      const accounts = await accountService.retrieveAll();
+      const accounts = await accountController.retrieveAll();
       res.json(accounts);
     } catch (err) {
       console.log("err: ", err);
@@ -43,7 +43,7 @@ app.post("/", (req, res) => {
     try {
       const accountForm = req.body;
       assert(accountForm, AccountFormModel);
-      const account = await accountService.create(accountForm);
+      const account = await accountController.create(accountForm);
       req.session.account = account;
       res.status(201).json(account);
     } catch (err) {
@@ -66,7 +66,7 @@ app.post("/login", (req, res) => {
     try {
       const credentials = req.body;
       assert(credentials, CredentialsModel);
-      const account = await accountService.login(credentials);
+      const account = await accountController.login(credentials);
       console.log("account: ", account);
       req.session.account = account;
       res.json(account);
@@ -93,7 +93,7 @@ app.post("/logout", (req, res) => {
 app.post("/point", auth, (req, res) => {
   (async () => {
     try {
-      req.session.account = await accountService.incrementScore(
+      req.session.account = await accountController.incrementScore(
         req.session.account.email
       );
       res.status(204).end();
