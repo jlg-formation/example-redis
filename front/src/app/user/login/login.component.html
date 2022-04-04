@@ -1,1 +1,17 @@
-<p>login works!</p>
+<main>
+  <h1>Login</h1>
+  <p>
+    Not registered? <a routerLink="/user/new-account">Create an account</a>.
+  </p>
+  <form [formGroup]="f" (ngSubmit)="submit()">
+    <label>
+      <div>Email</div>
+      <input type="email" formControlName="email" />
+    </label>
+    <label>
+      <div>Password</div>
+      <input type="password" formControlName="password" />
+    </label>
+    <button class="primary">Login</button>
+  </form>
+</main>
