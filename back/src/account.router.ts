@@ -67,6 +67,7 @@ app.post("/login", (req, res) => {
       const credentials = req.body;
       assert(credentials, CredentialsModel);
       const account = await accountService.login(credentials);
+      console.log("account: ", account);
       req.session.account = account;
       res.json(account);
     } catch (err) {

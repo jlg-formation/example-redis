@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Credentials } from 'src/app/interfaces/credentials';
 import { AccountService } from 'src/app/services/account.service';
 
@@ -16,7 +17,7 @@ export class LoginComponent implements OnInit {
 
   errorMessage = '';
 
-  constructor(private accountService: AccountService) {}
+  constructor(private accountService: AccountService, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
     try {
       await this.accountService.login(this.f.value as Credentials);
+      await this.router.navigateByUrl('/');
     } catch (err) {
       console.log('err: ', err);
       if (err instanceof Error) {
