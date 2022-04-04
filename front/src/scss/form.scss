@@ -14,8 +14,14 @@ form {
     }
   }
 
-  button {
-    margin-top: 2em;
+  p.error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 2em;
+    color: red;
+    font-weight: bold;
   }
 }
 

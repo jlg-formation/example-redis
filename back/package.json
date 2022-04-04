@@ -23,6 +23,8 @@
   "dependencies": {
     "express": "^4.17.3",
     "express-session": "^1.17.2",
-    "serve-index": "^1.9.1"
+    "is-email": "^1.0.2",
+    "serve-index": "^1.9.1",
+    "superstruct": "^0.15.4"
   }
 }

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Credentials } from 'src/app/interfaces/credentials';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-login',
@@ -12,9 +14,21 @@ export class LoginComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
-  constructor() {}
+  errorMessage = '';
+
+  constructor(private accountService: AccountService) {}
 
   ngOnInit(): void {}
 
-  submit() {}
+  async submit() {
+    this.errorMessage = '';
+    try {
+      await this.accountService.login(this.f.value as Credentials);
+    } catch (err) {
+      console.log('err: ', err);
+      if (err instanceof Error) {
+        this.errorMessage = err.message;
+      }
+    }
+  }
 }

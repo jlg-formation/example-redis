@@ -1,6 +1,6 @@
 import express from "express";
 import serveIndex from "serve-index";
-import { api } from "./api";
+import { api } from "./api.router";
 
 const port = +process.env.PORT || 3000;
 const wwwDir = "../front/dist/front";
