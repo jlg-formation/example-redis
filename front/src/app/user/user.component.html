@@ -3,19 +3,20 @@
   <div class="content">
     <app-detail [object]="accountService.account$ | async"></app-detail>
     <label>
-      <div>Couleur: {{ hue.value }}</div>
+      <div>Theme Primary Color: {{ hue.value }}</div>
       <app-hue-selector [formControl]="hue"> </app-hue-selector>
     </label>
     <nav>
       <button class="theme" (click)="colorSchemeService.toggleColorScheme()">
-        Mettre le thème
+        Set the
         {{
           (colorSchemeService.colorScheme$ | async) === "dark"
-            ? "lumineux"
-            : "sombre"
+            ? "light"
+            : "dark"
         }}
+        theme
       </button>
-      <button class="primary" (click)="logout()">Déconnexion</button>
+      <button class="primary" (click)="logout()">Logout</button>
     </nav>
   </div>
 </main>

@@ -63,8 +63,8 @@ export class AccountService {
   }
 
   async login(credentials: Credentials) {
-    await lastValueFrom(
-      this.http.post('/api/account/login', credentials).pipe(
+    const account = await lastValueFrom(
+      this.http.post<Account>('/api/account/login', credentials).pipe(
         catchError((err) => {
           console.log('err: ', err);
           if (err instanceof HttpErrorResponse) {
@@ -76,6 +76,7 @@ export class AccountService {
         })
       )
     );
+    this.account$.next(account);
   }
 
   async retrieveAll() {

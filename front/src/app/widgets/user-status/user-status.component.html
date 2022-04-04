@@ -1,12 +1,12 @@
 <ng-container *ngIf="(accountService.account$ | async) === undefined">
-  <button routerLink="/user/login">
+  <button class="quiet" routerLink="/user/login">
     <fa-icon [icon]="faRightToBracket"></fa-icon>
     <span>Connect</span>
   </button>
 </ng-container>
 
 <ng-container *ngIf="(accountService.account$ | async) !== undefined">
-  <button routerLink="/user">
+  <button class="quiet" routerLink="/user">
     <fa-icon [icon]="faUser"></fa-icon>
     <span>{{ (accountService.account$ | async)?.displayName }}</span>
   </button>
