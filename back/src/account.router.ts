@@ -2,6 +2,7 @@ import { Router } from "express";
 import { assert, StructError } from "superstruct";
 import { AccountService } from "./AccountService";
 import { AuthenticationError } from "./AuthenticationError";
+import { AccountFormModel } from "./validation/AccountFormModel";
 import { Credentials, CredentialsModel } from "./validation/Credentials";
 
 const app = Router();
@@ -13,8 +14,25 @@ app.get("/", (req, res) => {
 });
 
 app.post("/", (req, res) => {
-  const createdAccount = {};
-  res.status(201).json(createdAccount);
+  (async () => {
+    try {
+      const accountForm = req.body;
+      assert(accountForm, AccountFormModel);
+      const account = await accountService.create(accountForm);
+      res.status(201).json(account);
+    } catch (err) {
+      console.log("err: ", err);
+      if (err instanceof StructError) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      if (err instanceof Error) {
+        res.status(401).json({ error: err.message });
+        return;
+      }
+      res.status(500).end();
+    }
+  })();
 });
 
 app.post("/login", (req, res) => {

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AccountForm } from 'src/app/interfaces/account-form';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-new-account',
@@ -18,14 +20,27 @@ export class NewAccountComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private accountService: AccountService
+  ) {}
 
   ngOnInit(): void {}
 
   async submit() {
-    console.log('submit');
-    await this.router.navigate(['../account-created'], {
-      relativeTo: this.route,
-    });
+    this.errorMessage = '';
+    try {
+      await this.accountService.create(this.f.value as AccountForm);
+      await this.router.navigate(['../account-created'], {
+        relativeTo: this.route,
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        this.errorMessage = err.message;
+        return;
+      }
+      this.errorMessage = 'technical error.';
+    }
   }
 }
