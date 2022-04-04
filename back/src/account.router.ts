@@ -90,4 +90,18 @@ app.post("/logout", (req, res) => {
   res.status(204).end();
 });
 
+app.post("/point", auth, (req, res) => {
+  (async () => {
+    try {
+      req.session.account = await accountService.incrementScore(
+        req.session.account.email
+      );
+      res.status(204).end();
+    } catch (err) {
+      console.log("err: ", err);
+      res.status(500).end();
+    }
+  })();
+});
+
 export const account = app;

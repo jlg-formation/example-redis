@@ -5,6 +5,12 @@ import { Credentials } from "./validation/Credentials";
 
 const accounts: Account[] = [];
 
+const cleanAccount = (a: Account): Account => {
+  const result = { ...a };
+  delete result.password;
+  return result;
+};
+
 export class AccountService {
   async create(accountForm: AccountForm) {
     const account = accounts.find((a) => a.email === accountForm.email);
@@ -13,9 +19,16 @@ export class AccountService {
     }
     const newAccount: Account = { ...accountForm, score: 0 };
     accounts.push(newAccount);
-    const result = { ...newAccount };
-    delete result.password;
-    return result;
+    return cleanAccount(newAccount);
+  }
+
+  async incrementScore(email: string): Promise<Account> {
+    const account = accounts.find((a) => a.email === email);
+    if (!account) {
+      throw new Error("bad email");
+    }
+    account.score++;
+    return cleanAccount(account);
   }
 
   async login(credentials: Credentials) {
@@ -26,12 +39,10 @@ export class AccountService {
     if (credentials.password !== account.password) {
       throw new AuthenticationError("bad password");
     }
-    const result = { ...account };
-    delete result.password;
-    return result;
+    return cleanAccount(account);
   }
 
   async retrieveAll(): Promise<Account[]> {
-    return accounts;
+    return accounts.map((a) => cleanAccount(a));
   }
 }
