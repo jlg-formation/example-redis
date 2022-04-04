@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-header',
@@ -7,6 +6,5 @@ import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-  faRightToBracket = faRightToBracket;
-  constructor() {}
+  Xconstructor() {}
 }

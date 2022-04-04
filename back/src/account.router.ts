@@ -29,12 +29,13 @@ app.get("/", auth, (req, res) => {
   })();
 });
 
-app.post("/is-logged", (req, res) => {
+app.get("/is-logged", (req, res) => {
   if (!req.session.account) {
     res.status(401).end();
     return;
   }
-  res.status(200).end();
+  console.log("req.session.account: ", req.session.account);
+  res.status(200).json(req.session.account);
 });
 
 app.post("/", (req, res) => {

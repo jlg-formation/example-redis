@@ -12,6 +12,7 @@ export class AccountService {
       throw new Error("account email already exists.");
     }
     const newAccount: Account = { ...accountForm, score: 0 };
+    delete newAccount.password;
     accounts.push(newAccount);
     return newAccount;
   }
