@@ -3,7 +3,7 @@ import { assert, StructError } from "superstruct";
 import { AccountService } from "./AccountService";
 import { AuthenticationError } from "./AuthenticationError";
 import { AccountFormModel } from "./validation/AccountFormModel";
-import { Credentials, CredentialsModel } from "./validation/Credentials";
+import { CredentialsModel } from "./validation/Credentials";
 
 const app = Router();
 
