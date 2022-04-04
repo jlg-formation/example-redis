@@ -1,9 +1,14 @@
 import isEmail from "is-email";
-import { define, object, string } from "superstruct";
+import { define, Describe, object, string, Struct } from "superstruct";
 
-const Email = define("Email", isEmail);
+const Email: Struct<string, null> = define("Email", isEmail);
 
-export const Credentials = object({
+export interface Credentials {
+  email: string;
+  password: string;
+}
+
+export const CredentialsModel: Describe<Credentials> = object({
   email: Email,
-  passwordx: string(),
+  password: string(),
 });
