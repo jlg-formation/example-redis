@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./new-account.component.scss'],
 })
 export class NewAccountComponent implements OnInit {
+  errorMessage = '';
   f = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     displayName: new FormControl('', [
