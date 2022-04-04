@@ -28,4 +28,8 @@ export class AccountService {
     delete result.password;
     return result;
   }
+
+  async retrieveAll(): Promise<Account[]> {
+    return accounts;
+  }
 }

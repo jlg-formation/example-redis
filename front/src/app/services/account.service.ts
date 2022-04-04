@@ -10,7 +10,23 @@ import { Credentials } from '../interfaces/credentials';
 })
 export class AccountService {
   account$ = new BehaviorSubject<Account | undefined>(undefined);
-  constructor(private http: HttpClient) {}
+  accounts$ = new BehaviorSubject<Account[]>([]);
+
+  constructor(private http: HttpClient) {
+    this.checkConnection();
+  }
+
+  async checkConnection() {
+    try {
+      const account = await lastValueFrom(
+        this.http.get<Account>('/api/account/is-logged')
+      );
+      this.account$.next(account);
+    } catch (err) {
+      console.log('err: ', err);
+      this.account$.next(undefined);
+    }
+  }
 
   async create(accountForm: AccountForm) {
     const account = await lastValueFrom(
@@ -43,5 +59,12 @@ export class AccountService {
         })
       )
     );
+  }
+
+  async retrieveAll() {
+    const accounts = await lastValueFrom(
+      this.http.get<Account[]>('/api/account')
+    );
+    this.accounts$.next(accounts);
   }
 }

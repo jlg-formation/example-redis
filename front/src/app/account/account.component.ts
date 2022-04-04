@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Account } from '../interfaces/account';
+import { AccountService } from '../services/account.service';
 
 @Component({
   selector: 'app-account',
@@ -7,17 +7,19 @@ import { Account } from '../interfaces/account';
   styleUrls: ['./account.component.scss'],
 })
 export class AccountComponent implements OnInit {
-  accounts: Account[] = [
-    {
-      displayName: 'JLG',
-      email: 'jlguenego@gmail.com',
-      id: 'jlguenego',
-      identityProvider: 'myself',
-      score: 14,
-    },
-  ];
+  errorMessage = '';
+  constructor(public accountService: AccountService) {}
 
-  constructor() {}
-
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    (async () => {
+      try {
+        await this.accountService.retrieveAll();
+      } catch (err) {
+        console.log('err: ', err);
+        if (err instanceof Error) {
+          this.errorMessage = err.message;
+        }
+      }
+    })();
+  }
 }

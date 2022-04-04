@@ -13,7 +13,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let a of accounts">
+        <tr *ngFor="let a of accountService.accounts$ | async">
           <td class="email">{{ a.email }}</td>
           <td class="displayName">{{ a.displayName }}</td>
           <td class="score">{{ a.score }}</td>

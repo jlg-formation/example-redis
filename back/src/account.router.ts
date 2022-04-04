@@ -1,16 +1,40 @@
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { assert, StructError } from "superstruct";
 import { AccountService } from "./AccountService";
 import { AuthenticationError } from "./AuthenticationError";
 import { AccountFormModel } from "./validation/AccountFormModel";
 import { CredentialsModel } from "./validation/Credentials";
 
+export const auth = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.account) {
+    res.status(401).end();
+    return;
+  }
+  next();
+};
+
 const app = Router();
 
 const accountService = new AccountService();
 
-app.get("/", (req, res) => {
-  res.json([]);
+app.get("/", auth, (req, res) => {
+  (async () => {
+    try {
+      const accounts = await accountService.retrieveAll();
+      res.json(accounts);
+    } catch (err) {
+      console.log("err: ", err);
+      res.status(500).end();
+    }
+  })();
+});
+
+app.post("/is-logged", (req, res) => {
+  if (!req.session.account) {
+    res.status(401).end();
+    return;
+  }
+  res.status(200).end();
 });
 
 app.post("/", (req, res) => {
@@ -19,6 +43,7 @@ app.post("/", (req, res) => {
       const accountForm = req.body;
       assert(accountForm, AccountFormModel);
       const account = await accountService.create(accountForm);
+      req.session.account = account;
       res.status(201).json(account);
     } catch (err) {
       console.log("err: ", err);
@@ -41,6 +66,7 @@ app.post("/login", (req, res) => {
       const credentials = req.body;
       assert(credentials, CredentialsModel);
       const account = await accountService.login(credentials);
+      req.session.account = account;
       res.json(account);
     } catch (err) {
       console.log("err: ", err);
@@ -58,7 +84,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  const createdAccount = {};
+  req.session.account = undefined;
   res.status(204).end();
 });
 
