@@ -1,1 +1,21 @@
-<p>user works!</p>
+<main>
+  <h1>User Information</h1>
+  <div class="content">
+    <app-detail [object]="accountService.account$ | async"></app-detail>
+    <label>
+      <div>Couleur: {{ hue.value }}</div>
+      <app-hue-selector [formControl]="hue"> </app-hue-selector>
+    </label>
+    <nav>
+      <button class="theme" (click)="colorSchemeService.toggleColorScheme()">
+        Mettre le thème
+        {{
+          (colorSchemeService.colorScheme$ | async) === "dark"
+            ? "lumineux"
+            : "sombre"
+        }}
+      </button>
+      <button class="primary" (click)="logout()">Déconnexion</button>
+    </nav>
+  </div>
+</main>

@@ -1,0 +1,6 @@
+<table>
+  <tr *ngFor="let entry of entries$ | async">
+    <td class="name">{{ entry[0] }}</td>
+    <td class="value">{{ entry[1] }}</td>
+  </tr>
+</table>

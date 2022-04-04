@@ -45,6 +45,23 @@ export class AccountService {
     this.account$.next(account);
   }
 
+  async logout() {
+    await lastValueFrom(
+      this.http.post('/api/account/logout', undefined).pipe(
+        catchError((err) => {
+          console.log('err: ', err);
+          if (err instanceof HttpErrorResponse) {
+            if (err.error?.error) {
+              throw new Error(err.error?.error);
+            }
+          }
+          throw new Error('oups. bad logout');
+        })
+      )
+    );
+    this.account$.next(undefined);
+  }
+
   async login(credentials: Credentials) {
     await lastValueFrom(
       this.http.post('/api/account/login', credentials).pipe(
