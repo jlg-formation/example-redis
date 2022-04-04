@@ -4,6 +4,9 @@
   "description": "",
   "scripts": {
     "start": "npx nodemon src/server.ts",
+    "build": "tsc",
+    "start:prod": "node dist/server.js",
+    "start:prod2": "set PORT=3001 && node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

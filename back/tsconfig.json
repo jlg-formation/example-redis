@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2017",
+    "moduleResolution": "Node",
+    "module": "CommonJS",
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "exclude": ["node_modules/**/*"],
   "include": ["src/**/*.ts"]
