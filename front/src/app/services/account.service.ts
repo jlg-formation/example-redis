@@ -46,6 +46,10 @@ export class AccountService {
     this.account$.next(account);
   }
 
+  async incrementMyScore() {
+    await lastValueFrom(this.http.post('/api/account/point', undefined));
+  }
+
   async login(credentials: Credentials) {
     const account = await lastValueFrom(
       this.http.post<Account>('/api/account/login', credentials).pipe(

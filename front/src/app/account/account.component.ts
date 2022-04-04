@@ -22,4 +22,8 @@ export class AccountComponent implements OnInit {
       }
     })();
   }
+
+  async incrementMyScore() {
+    await this.accountService.incrementMyScore();
+  }
 }
