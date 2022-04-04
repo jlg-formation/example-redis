@@ -1,0 +1,24 @@
+<main>
+  <h1>List of account</h1>
+  <div class="content">
+    <nav>
+      <button>Ping</button>
+    </nav>
+    <table>
+      <thead>
+        <tr>
+          <th class="email">Email</th>
+          <th class="displayName">Display Name</th>
+          <th class="score">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of accounts">
+          <td class="email">{{ a.email }}</td>
+          <td class="displayName">{{ a.displayName }}</td>
+          <td class="score">{{ a.score }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
