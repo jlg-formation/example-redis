@@ -11,6 +11,7 @@ import { Credentials } from '../interfaces/credentials';
 export class AccountService {
   account$ = new BehaviorSubject<Account | undefined>(undefined);
   accounts$ = new BehaviorSubject<Account[]>([]);
+  afterLoginRoute = '/';
 
   constructor(private http: HttpClient) {
     this.checkConnection();
@@ -45,23 +46,6 @@ export class AccountService {
     this.account$.next(account);
   }
 
-  async logout() {
-    await lastValueFrom(
-      this.http.post('/api/account/logout', undefined).pipe(
-        catchError((err) => {
-          console.log('err: ', err);
-          if (err instanceof HttpErrorResponse) {
-            if (err.error?.error) {
-              throw new Error(err.error?.error);
-            }
-          }
-          throw new Error('oups. bad logout');
-        })
-      )
-    );
-    this.account$.next(undefined);
-  }
-
   async login(credentials: Credentials) {
     const account = await lastValueFrom(
       this.http.post<Account>('/api/account/login', credentials).pipe(
@@ -79,10 +63,31 @@ export class AccountService {
     this.account$.next(account);
   }
 
+  async logout() {
+    await lastValueFrom(
+      this.http.post('/api/account/logout', undefined).pipe(
+        catchError((err) => {
+          console.log('err: ', err);
+          if (err instanceof HttpErrorResponse) {
+            if (err.error?.error) {
+              throw new Error(err.error?.error);
+            }
+          }
+          throw new Error('oups. bad logout');
+        })
+      )
+    );
+    this.account$.next(undefined);
+  }
+
   async retrieveAll() {
     const accounts = await lastValueFrom(
       this.http.get<Account[]>('/api/account')
     );
     this.accounts$.next(accounts);
+  }
+
+  setAfterLoginRoute(url: string) {
+    this.afterLoginRoute = url;
   }
 }

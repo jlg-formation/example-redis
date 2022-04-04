@@ -25,7 +25,8 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
     try {
       await this.accountService.login(this.f.value as Credentials);
-      await this.router.navigateByUrl('/');
+      await this.router.navigateByUrl(this.accountService.afterLoginRoute);
+      this.accountService.afterLoginRoute = '/';
     } catch (err) {
       console.log('err: ', err);
       if (err instanceof Error) {

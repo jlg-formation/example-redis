@@ -27,6 +27,7 @@ export class AuthenticationGuard implements CanActivate {
       return true;
     }
 
+    this.accountService.setAfterLoginRoute(state.url);
     this.router.navigateByUrl('/user/login');
     return false;
   }
