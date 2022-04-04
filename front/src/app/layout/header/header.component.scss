@@ -29,6 +29,8 @@ header {
   }
 
   nav {
+    display: flex;
+    gap: 0.5em;
     button {
       display: flex;
       gap: 0.5em;
