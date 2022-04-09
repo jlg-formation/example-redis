@@ -24,6 +24,9 @@ export class AccountComponent implements OnInit, OnDestroy {
   constructor(public accountService: AccountService) {
     this.ws.subscribe((message) => {
       console.log('message: ', message);
+      if (!(message.data && message.data instanceof Array)) {
+        return;
+      }
       const accounts: Account[] = message.data as Account[];
       console.log('accounts: ', accounts);
       this.accountService.accounts$.next(accounts);
