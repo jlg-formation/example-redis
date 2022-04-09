@@ -17,6 +17,7 @@ export const webSocket = (server: http.Server) => {
   wss.on("connection", function connection(websocket) {
     websocket.on("message", function message(data) {
       console.log("received: %s", data);
+      websocket.send(JSON.stringify({ message: "yes sure." }));
     });
 
     websocket.send(JSON.stringify({ message: "something" }));
