@@ -21,8 +21,6 @@ export const webSocket = (server: http.Server) => {
       websocket.send(JSON.stringify({ message: "yes sure." }));
     });
 
-    websocket.send(JSON.stringify({ message: "something" }));
-
     websocket.on("close", function message() {
       console.log("closing client websocket.");
     });

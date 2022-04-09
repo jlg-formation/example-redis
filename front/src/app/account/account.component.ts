@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { Account } from '../interfaces/account';
 import { WebsocketMessage } from '../interfaces/websocket-message';
 import { AccountService } from '../services/account.service';
 
@@ -21,8 +22,11 @@ export class AccountComponent implements OnInit, OnDestroy {
   >(`${protocol}//${host}/websocket`);
 
   constructor(public accountService: AccountService) {
-    this.ws.subscribe((data) => {
-      console.log('data: ', data);
+    this.ws.subscribe((message) => {
+      console.log('message: ', message);
+      const accounts: Account[] = message.data as Account[];
+      console.log('accounts: ', accounts);
+      this.accountService.accounts$.next(accounts);
     });
     this.ws.next({ data: 'some init message' });
   }

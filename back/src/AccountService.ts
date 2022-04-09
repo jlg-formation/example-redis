@@ -12,7 +12,7 @@ const cleanAccount = (a: Account): Account => {
   return result;
 };
 
-export class AccountController {
+export class AccountService {
   constructor(private wss: ws.Server) {}
 
   async create(accountForm: AccountForm) {
@@ -50,11 +50,12 @@ export class AccountController {
   publish() {
     console.log("about to publish to everybody the new list of account");
     // publish on websocket all the accounts.
-    const data = JSON.stringify(accounts);
+    const data = accounts;
 
     this.wss.clients.forEach(function each(client) {
+      console.log("client: ", (client as any)._socket.remoteAddress);
       if (client.readyState === ws.WebSocket.OPEN) {
-        client.send(data);
+        client.send(JSON.stringify({ data }));
       }
     });
   }

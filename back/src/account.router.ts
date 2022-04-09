@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import ws from "ws";
 import { assert, StructError } from "superstruct";
-import { AccountController } from "./AccountController";
+import { AccountService } from "./AccountService";
 import { AuthenticationError } from "./AuthenticationError";
 import { AccountFormModel } from "./validation/AccountFormModel";
 import { CredentialsModel } from "./validation/Credentials";
@@ -17,7 +17,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 export const account = (wss: ws.Server) => {
   const app = Router();
 
-  const accountController = new AccountController(wss);
+  const accountController = new AccountService(wss);
 
   app.get("/", auth, (req, res) => {
     (async () => {
