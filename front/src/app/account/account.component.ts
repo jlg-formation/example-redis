@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { webSocket } from 'rxjs/webSocket';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { WebsocketMessage } from '../interfaces/websocket-message';
 import { AccountService } from '../services/account.service';
 
 // set ws protocol when using http and wss when using https
@@ -13,15 +14,25 @@ const host = window.location.host;
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss'],
 })
-export class AccountComponent implements OnInit {
+export class AccountComponent implements OnInit, OnDestroy {
   errorMessage = '';
-  ws = webSocket<{ message: string }>(`${protocol}//${host}/websocket`);
+  ws: WebSocketSubject<WebsocketMessage<unknown>> = webSocket<
+    WebsocketMessage<unknown>
+  >(`${protocol}//${host}/websocket`);
 
   constructor(public accountService: AccountService) {
     this.ws.subscribe((data) => {
       console.log('data: ', data);
     });
-    this.ws.next({ message: 'some init message' });
+    this.ws.next({ data: 'some init message' });
+  }
+
+  async incrementMyScore() {
+    await this.accountService.incrementMyScore();
+  }
+
+  ngOnDestroy(): void {
+    this.ws.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -37,11 +48,7 @@ export class AccountComponent implements OnInit {
     })();
   }
 
-  async incrementMyScore() {
-    await this.accountService.incrementMyScore();
-  }
-
   sendPing() {
-    this.ws.next({ message: 'some message' });
+    this.ws.next({ data: 'some message' });
   }
 }
