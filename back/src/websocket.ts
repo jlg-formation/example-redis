@@ -5,7 +5,7 @@ export const webSocket = (server: http.Server) => {
   console.log("starting websocket.");
   const wss = new WebSocket.Server({
     noServer: true,
-    path: "/websocket/connect",
+    path: "/websocket",
   });
 
   server.on("upgrade", (request, socket, head) => {

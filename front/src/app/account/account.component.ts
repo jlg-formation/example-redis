@@ -15,7 +15,7 @@ const host = window.location.host;
 })
 export class AccountComponent implements OnInit {
   errorMessage = '';
-  ws = webSocket<{ message: string }>(`${protocol}//${host}/websocket/connect`);
+  ws = webSocket<{ message: string }>(`${protocol}//${host}/websocket`);
 
   constructor(public accountService: AccountService) {
     this.ws.asObservable().subscribe((data) => {
