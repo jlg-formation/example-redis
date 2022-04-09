@@ -10,7 +10,7 @@ const wwwDir = "../front/dist/front";
 
 const app = express();
 const server = createServer(app);
-webSocket(server);
+const wss = webSocket(server);
 
 app.use(
   session({
@@ -21,7 +21,7 @@ app.use(
   })
 );
 
-app.use("/api", api);
+app.use("/api", api(wss));
 
 app.use(express.static(wwwDir));
 app.use(serveIndex(wwwDir, { icons: true }));

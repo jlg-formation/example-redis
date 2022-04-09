@@ -1,9 +1,9 @@
 import http from "http";
-import WebSocket from "ws";
+import ws from "ws";
 
 export const webSocket = (server: http.Server) => {
   console.log("starting websocket.");
-  const wss = new WebSocket.Server({
+  const wss = new ws.Server({
     noServer: true,
     path: "/websocket",
   });
@@ -14,11 +14,13 @@ export const webSocket = (server: http.Server) => {
     });
   });
 
-  wss.on("connection", function connection(ws) {
-    ws.on("message", function message(data) {
+  wss.on("connection", function connection(websocket) {
+    websocket.on("message", function message(data) {
       console.log("received: %s", data);
     });
 
-    ws.send(JSON.stringify({ message: "something" }));
+    websocket.send(JSON.stringify({ message: "something" }));
   });
+
+  return wss;
 };

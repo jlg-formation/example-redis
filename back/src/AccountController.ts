@@ -2,6 +2,7 @@ import { AuthenticationError } from "./AuthenticationError";
 import { Account } from "./interfaces/Account";
 import { AccountForm } from "./validation/AccountFormModel";
 import { Credentials } from "./validation/Credentials";
+import ws from "ws";
 
 const accounts: Account[] = [];
 
@@ -12,6 +13,8 @@ const cleanAccount = (a: Account): Account => {
 };
 
 export class AccountController {
+  constructor(private wss: ws.Server) {}
+
   async create(accountForm: AccountForm) {
     const account = accounts.find((a) => a.email === accountForm.email);
     if (account) {
@@ -45,7 +48,15 @@ export class AccountController {
   }
 
   publish() {
+    console.log("about to publish to everybody the new list of account");
     // publish on websocket all the accounts.
+    const data = JSON.stringify(accounts);
+
+    this.wss.clients.forEach(function each(client) {
+      if (client.readyState === ws.WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
   }
 
   async retrieveAll(): Promise<Account[]> {

@@ -18,7 +18,7 @@ export class AccountComponent implements OnInit {
   ws = webSocket<{ message: string }>(`${protocol}//${host}/websocket`);
 
   constructor(public accountService: AccountService) {
-    this.ws.asObservable().subscribe((data) => {
+    this.ws.subscribe((data) => {
       console.log('data: ', data);
     });
     this.ws.next({ message: 'some init message' });

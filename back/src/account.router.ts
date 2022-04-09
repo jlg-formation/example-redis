@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
+import ws from "ws";
 import { assert, StructError } from "superstruct";
 import { AccountController } from "./AccountController";
 import { AuthenticationError } from "./AuthenticationError";
@@ -13,95 +14,97 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-const app = Router();
+export const account = (wss: ws.Server) => {
+  const app = Router();
 
-const accountController = new AccountController();
+  const accountController = new AccountController(wss);
 
-app.get("/", auth, (req, res) => {
-  (async () => {
-    try {
-      const accounts = await accountController.retrieveAll();
-      res.json(accounts);
-    } catch (err) {
-      console.log("err: ", err);
-      res.status(500).end();
-    }
-  })();
-});
-
-app.get("/is-logged", (req, res) => {
-  if (!req.session.account) {
-    res.status(401).end();
-    return;
-  }
-  console.log("req.session.account: ", req.session.account);
-  res.status(200).json(req.session.account);
-});
-
-app.post("/", (req, res) => {
-  (async () => {
-    try {
-      const accountForm = req.body;
-      assert(accountForm, AccountFormModel);
-      const account = await accountController.create(accountForm);
-      req.session.account = account;
-      res.status(201).json(account);
-    } catch (err) {
-      console.log("err: ", err);
-      if (err instanceof StructError) {
-        res.status(400).json({ error: err.message });
-        return;
+  app.get("/", auth, (req, res) => {
+    (async () => {
+      try {
+        const accounts = await accountController.retrieveAll();
+        res.json(accounts);
+      } catch (err) {
+        console.log("err: ", err);
+        res.status(500).end();
       }
-      if (err instanceof Error) {
-        res.status(401).json({ error: err.message });
-        return;
-      }
-      res.status(500).end();
+    })();
+  });
+
+  app.get("/is-logged", (req, res) => {
+    if (!req.session.account) {
+      res.status(401).end();
+      return;
     }
-  })();
-});
+    console.log("req.session.account: ", req.session.account);
+    res.status(200).json(req.session.account);
+  });
 
-app.post("/login", (req, res) => {
-  (async () => {
-    try {
-      const credentials = req.body;
-      assert(credentials, CredentialsModel);
-      const account = await accountController.login(credentials);
-      console.log("account: ", account);
-      req.session.account = account;
-      res.json(account);
-    } catch (err) {
-      console.log("err: ", err);
-      if (err instanceof StructError) {
-        res.status(400).json({ error: err.message });
-        return;
+  app.post("/", (req, res) => {
+    (async () => {
+      try {
+        const accountForm = req.body;
+        assert(accountForm, AccountFormModel);
+        const account = await accountController.create(accountForm);
+        req.session.account = account;
+        res.status(201).json(account);
+      } catch (err) {
+        console.log("err: ", err);
+        if (err instanceof StructError) {
+          res.status(400).json({ error: err.message });
+          return;
+        }
+        if (err instanceof Error) {
+          res.status(401).json({ error: err.message });
+          return;
+        }
+        res.status(500).end();
       }
-      if (err instanceof AuthenticationError) {
-        res.status(401).json({ error: err.message });
-        return;
+    })();
+  });
+
+  app.post("/login", (req, res) => {
+    (async () => {
+      try {
+        const credentials = req.body;
+        assert(credentials, CredentialsModel);
+        const account = await accountController.login(credentials);
+        console.log("account: ", account);
+        req.session.account = account;
+        res.json(account);
+      } catch (err) {
+        console.log("err: ", err);
+        if (err instanceof StructError) {
+          res.status(400).json({ error: err.message });
+          return;
+        }
+        if (err instanceof AuthenticationError) {
+          res.status(401).json({ error: err.message });
+          return;
+        }
+        res.status(500).end();
       }
-      res.status(500).end();
-    }
-  })();
-});
+    })();
+  });
 
-app.post("/logout", (req, res) => {
-  req.session.account = undefined;
-  res.status(204).end();
-});
+  app.post("/logout", (req, res) => {
+    req.session.account = undefined;
+    res.status(204).end();
+  });
 
-app.post("/point", auth, (req, res) => {
-  (async () => {
-    try {
-      req.session.account = await accountController.incrementScore(
-        req.session.account.email
-      );
-      res.status(204).end();
-    } catch (err) {
-      console.log("err: ", err);
-      res.status(500).end();
-    }
-  })();
-});
+  app.post("/point", auth, (req, res) => {
+    (async () => {
+      try {
+        req.session.account = await accountController.incrementScore(
+          req.session.account.email
+        );
+        res.status(204).end();
+      } catch (err) {
+        console.log("err: ", err);
+        res.status(500).end();
+      }
+    })();
+  });
 
-export const account = app;
+  return app;
+};
