@@ -2,11 +2,15 @@ import express from "express";
 import serveIndex from "serve-index";
 import session from "express-session";
 import { api } from "./api.router";
+import { createServer } from "http";
+import { webSocket } from "./websocket";
 
 const port = +process.env.PORT || 3000;
 const wwwDir = "../front/dist/front";
 
 const app = express();
+const server = createServer(app);
+webSocket(server);
 
 app.use(
   session({
@@ -22,6 +26,6 @@ app.use("/api", api);
 app.use(express.static(wwwDir));
 app.use(serveIndex(wwwDir, { icons: true }));
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });

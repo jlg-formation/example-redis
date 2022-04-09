@@ -19,6 +19,7 @@ export class AccountController {
     }
     const newAccount: Account = { ...accountForm, score: 0 };
     accounts.push(newAccount);
+    this.publish();
     return cleanAccount(newAccount);
   }
 
@@ -28,6 +29,7 @@ export class AccountController {
       throw new Error("bad email");
     }
     account.score++;
+    this.publish();
     return cleanAccount(account);
   }
 
@@ -40,6 +42,10 @@ export class AccountController {
       throw new AuthenticationError("bad password");
     }
     return cleanAccount(account);
+  }
+
+  publish() {
+    // publish on websocket all the accounts.
   }
 
   async retrieveAll(): Promise<Account[]> {
