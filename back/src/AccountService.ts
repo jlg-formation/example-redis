@@ -42,6 +42,7 @@ export class AccountService {
   }
 
   async incrementScore(email: string): Promise<void> {
+    console.log("increment score for email: ", email);
     const hash = await redisCli.HGETALL(`accounts:${email}`);
     console.log("hash: ", hash);
     if (!hash) {
@@ -62,20 +63,13 @@ export class AccountService {
     if (credentials.password !== hash.password) {
       throw new AuthenticationError("bad password");
     }
-    return cleanAccount({ ...hash });
+    return cleanAccount({ ...hash, email: credentials.email });
   }
 
   async publish() {
-    console.log("about to publish to everybody the new list of account");
-    // publish on websocket all the accounts.
-    const accounts = await this.retrieveAll();
-
-    this.wss.clients.forEach(function each(client) {
-      console.log("client: ", (client as any)._socket.remoteAddress);
-      if (client.readyState === ws.WebSocket.OPEN) {
-        client.send(JSON.stringify({ data: accounts }));
-      }
-    });
+    console.log("about to publish");
+    await redisCli.publish("accounts", "refresh");
+    console.log("publish ok");
   }
 
   async retrieveAll(): Promise<Account[]> {
@@ -86,5 +80,18 @@ export class AccountService {
       accounts.push({ ...hash, email: key.substring("accounts:".length) });
     }
     return accounts.map((a) => cleanAccount(a));
+  }
+
+  async sendAccounts() {
+    console.log("about to publish to everybody the new list of account");
+    // publish on websocket all the accounts.
+    const accounts = await this.retrieveAll();
+
+    this.wss.clients.forEach(function each(client) {
+      console.log("client: ", (client as any)._socket.remoteAddress);
+      if (client.readyState === ws.WebSocket.OPEN) {
+        client.send(JSON.stringify({ data: accounts }));
+      }
+    });
   }
 }

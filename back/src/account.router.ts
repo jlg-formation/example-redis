@@ -17,12 +17,12 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 export const account = (wss: ws.Server) => {
   const app = Router();
 
-  const accountController = new AccountService(wss);
+  const accountService = new AccountService(wss);
 
   app.get("/", auth, (req, res) => {
     (async () => {
       try {
-        const accounts = await accountController.retrieveAll();
+        const accounts = await accountService.retrieveAll();
         res.json(accounts);
       } catch (err) {
         console.log("err: ", err);
@@ -45,7 +45,7 @@ export const account = (wss: ws.Server) => {
       try {
         const accountForm = req.body;
         assert(accountForm, AccountFormModel);
-        const account = await accountController.create(accountForm);
+        const account = await accountService.create(accountForm);
         req.session.account = account;
         res.status(201).json(account);
       } catch (err) {
@@ -68,7 +68,7 @@ export const account = (wss: ws.Server) => {
       try {
         const credentials = req.body;
         assert(credentials, CredentialsModel);
-        const account = await accountController.login(credentials);
+        const account = await accountService.login(credentials);
         console.log("account: ", account);
         req.session.account = account;
         res.json(account);
@@ -95,7 +95,7 @@ export const account = (wss: ws.Server) => {
   app.post("/point", auth, (req, res) => {
     (async () => {
       try {
-        await accountController.incrementScore(req.session.account.email);
+        await accountService.incrementScore(req.session.account.email);
         res.status(204).end();
       } catch (err) {
         console.log("err: ", err);
