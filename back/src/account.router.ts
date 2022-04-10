@@ -95,9 +95,7 @@ export const account = (wss: ws.Server) => {
   app.post("/point", auth, (req, res) => {
     (async () => {
       try {
-        req.session.account = await accountController.incrementScore(
-          req.session.account.email
-        );
+        await accountController.incrementScore(req.session.account.email);
         res.status(204).end();
       } catch (err) {
         console.log("err: ", err);

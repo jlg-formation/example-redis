@@ -3,7 +3,7 @@ import session from "express-session";
 import { createClient } from "redis";
 
 const RedisStore = connectRedis(session);
-const redisClient = createClient({
+export const redisClient = createClient({
   url: "redis://127.0.0.1:6379",
   legacyMode: true,
 });

@@ -3,6 +3,9 @@ import { Account } from "./interfaces/Account";
 import { AccountForm } from "./validation/AccountFormModel";
 import { Credentials } from "./validation/Credentials";
 import ws from "ws";
+import { redisClient } from "./redis-session";
+
+const redisCli = redisClient.v4;
 
 const accounts: Account[] = [];
 
@@ -16,51 +19,72 @@ export class AccountService {
   constructor(private wss: ws.Server) {}
 
   async create(accountForm: AccountForm) {
-    const account = accounts.find((a) => a.email === accountForm.email);
-    if (account) {
+    const hash = await redisCli.HGETALL(`accounts:${accountForm.email}`);
+    console.log("hash: ", hash);
+    if (Object.keys(hash).length > 0) {
       throw new Error("account email already exists.");
     }
+
+    await redisCli.hSet(
+      `accounts:${accountForm.email}`,
+      "displayName",
+      accountForm.displayName
+    );
+    await redisCli.hSet(
+      `accounts:${accountForm.email}`,
+      "password",
+      accountForm.password
+    );
+    await redisCli.hSet(`accounts:${accountForm.email}`, "score", 0);
+    await this.publish();
     const newAccount: Account = { ...accountForm, score: 0 };
-    accounts.push(newAccount);
-    this.publish();
     return cleanAccount(newAccount);
   }
 
-  async incrementScore(email: string): Promise<Account> {
-    const account = accounts.find((a) => a.email === email);
-    if (!account) {
+  async incrementScore(email: string): Promise<void> {
+    const hash = await redisCli.HGETALL(`accounts:${email}`);
+    console.log("hash: ", hash);
+    if (!hash) {
       throw new Error("bad email");
     }
-    account.score++;
-    this.publish();
-    return cleanAccount(account);
+
+    await redisCli.hIncrBy(`accounts:${email}`, "score", 1);
+    await this.publish();
   }
 
   async login(credentials: Credentials) {
-    const account = accounts.find((a) => a.email === credentials.email);
-    if (!account) {
+    const hash = await redisCli.HGETALL(`accounts:${credentials.email}`);
+    console.log("hash: ", hash);
+    if (!hash) {
       throw new AuthenticationError("bad login");
     }
-    if (credentials.password !== account.password) {
+
+    if (credentials.password !== hash.password) {
       throw new AuthenticationError("bad password");
     }
-    return cleanAccount(account);
+    return cleanAccount({ ...hash });
   }
 
-  publish() {
+  async publish() {
     console.log("about to publish to everybody the new list of account");
     // publish on websocket all the accounts.
-    const data = accounts;
+    const accounts = await this.retrieveAll();
 
     this.wss.clients.forEach(function each(client) {
       console.log("client: ", (client as any)._socket.remoteAddress);
       if (client.readyState === ws.WebSocket.OPEN) {
-        client.send(JSON.stringify({ data }));
+        client.send(JSON.stringify({ data: accounts }));
       }
     });
   }
 
   async retrieveAll(): Promise<Account[]> {
+    const keys = await redisCli.KEYS("accounts:*");
+    const accounts: Account[] = [];
+    for (const key of keys) {
+      const hash = await redisCli.HGETALL(key);
+      accounts.push({ ...hash, email: key.substring("accounts:".length) });
+    }
     return accounts.map((a) => cleanAccount(a));
   }
 }
