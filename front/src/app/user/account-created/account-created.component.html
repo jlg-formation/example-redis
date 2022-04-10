@@ -1,5 +1,5 @@
 <main>
-  <h1>Hello {{ user.displayName }}!</h1>
+  <h1>Hello {{ (accountService.account$ | async)?.displayName }}!</h1>
   <p>Awesome! Your account has been created.</p>
   <button class="primary" routerLink="/">Home</button>
 </main>
