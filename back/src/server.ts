@@ -1,25 +1,23 @@
 import express from "express";
-import serveIndex from "serve-index";
-import session from "express-session";
-import { api } from "./api.router";
 import { createServer } from "http";
+import morgan from "morgan";
+import serveIndex from "serve-index";
+import { api } from "./api.router";
+import { redisSession } from "./redis-session";
 import { webSocket } from "./websocket";
 
 const port = +process.env.PORT || 3000;
 const wwwDir = "../front/dist/front";
 
 const app = express();
+app.set("trust proxy", 1);
+
 const server = createServer(app);
 const wss = webSocket(server);
 
-app.use(
-  session({
-    name: "example-redis.sid",
-    secret: "do not change this secret or all session will be reset...",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.use(morgan("tiny"));
+
+app.use(redisSession);
 
 app.use("/api", api(wss));
 

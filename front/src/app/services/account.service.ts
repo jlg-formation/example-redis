@@ -19,6 +19,7 @@ export class AccountService {
 
   async checkConnection() {
     try {
+      console.log('check connection');
       const account = await lastValueFrom(
         this.http.get<Account>('/api/account/is-logged')
       );
