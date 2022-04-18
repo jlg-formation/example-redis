@@ -1,0 +1,1 @@
+ADDITIONAL_OPTIONS="--maxmemory 100mb"
